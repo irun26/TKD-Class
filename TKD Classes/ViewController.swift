@@ -8,32 +8,49 @@
 
 import UIKit
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
+class ViewController: UIViewController {
     
-    @IBOutlet weak var datesTableView: UITableView!
+    // MARK: - Variables and Constants
     var arrayOfDates: [String] = []
+    var formattedDate: String = "formattedDate"
     
-    @IBAction func AddTodayClicked(_ sender: Any) {
-
-        let date = Date()
-        let dateFormatter = DateFormatter()
-        dateFormatter.timeZone = .current
-        dateFormatter.dateFormat = "MM/dd/yyyy"
-        let formattedDate = dateFormatter.string(from: date)
-        
-        arrayOfDates.append(formattedDate)
-        datesTableView.reloadData()
-
-    }
+    // MARK: - Outlets
+    @IBOutlet weak var datesTableView: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         datesTableView.tableFooterView?.isHidden = true
-
     }
+    
+    @IBAction func AddTodayClicked(_ sender: Any) {
+        forDateFormatting()
+        forOneSingleEntryPerDay()
+    }
+    
+    func forOneSingleEntryPerDay() {
+        if !arrayOfDates.contains(formattedDate) {
+            arrayOfDates.append(formattedDate)
+            arrayOfDates.sort()
+            datesTableView.reloadData()
+        }
+    }
+    
+    func forDateFormatting() -> (String) {
+        let date = Date()
+        let dateFormatter = DateFormatter()
+        dateFormatter.timeZone = .current
+        dateFormatter.dateFormat = "MM/dd/yyyy"
+        formattedDate = dateFormatter.string(from: date)
+        return formattedDate
+    }
+    
+    
+}
 
+//MARK: - TableView Methods
+extension ViewController: UITableViewDelegate, UITableViewDataSource {
+    
     func tableView(_ datesTableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-//        return arrayOfDates.count
         if section != numberOfSections() - 1 || arrayOfDates.count % 10 == 0 {
             return 10
         }
@@ -49,11 +66,6 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     func numberOfSections(in tableView: UITableView) -> Int {
         return numberOfSections()
     }
-
-    func numberOfSections() -> Int {
-        let number = arrayOfDates.count % 10 == 0 ? (arrayOfDates.count/10) : (arrayOfDates.count/10) + 1
-        return number
-    }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if section != numberOfSections() - 1 {
@@ -65,7 +77,8 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
     }
     
-    
-
+    func numberOfSections() -> Int {
+        let number = arrayOfDates.count % 10 == 0 ? (arrayOfDates.count/10) : (arrayOfDates.count/10) + 1
+        return number
+    }
 }
-
